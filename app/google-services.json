@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "107878569814",
+    "project_id": "canteenconnect-965ca",
+    "storage_bucket": "canteenconnect-965ca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107878569814:android:008e32133cd4d73e3da8f7",
+        "android_client_info": {
+          "package_name": "com.vineet.campusconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC12nmv2q3N1ADQ40fB9ho5TVDclfJrVC0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
