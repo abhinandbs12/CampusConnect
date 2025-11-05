@@ -1,10 +1,11 @@
-package com.vineet.campusconnect; // <-- Make sure this line matches!
+package com.vineet.campusconnect;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.GridLayout;
+import android.widget.GridLayout; // Use standard Android GridLayout
 import android.widget.ImageButton;
+import android.widget.TextView; // NEW: Import TextView
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +14,13 @@ import com.google.android.material.card.MaterialCardView;
 
 public class MainActivity extends AppCompatActivity {
 
-    // 1. Declare all our new UI elements
+    // 1. Declare all our UI elements.
     MaterialButtonToggleGroup toggleGroup;
-    GridLayout gridUtility, gridPeer;
+    GridLayout gridUtility;
+    GridLayout gridPeer;
     ImageButton profileButton;
+    TextView welcomeTitle; // NEW: Declaration for the header title
+
     MaterialCardView cardCanteen, cardEvent, cardTask, cardLinks;
 
     // ... after your other card declarations
@@ -25,14 +29,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 2. Link this Java file to our new layout
         setContentView(R.layout.activity_main);
 
         // 3. Find all the UI elements by their ID
         toggleGroup = findViewById(R.id.toggle_group);
+
+        // Find the new TextView element
+        welcomeTitle = findViewById(R.id.tv_welcome_title);
+
+        // FIX: Both containers must be found as GridLayouts
         gridUtility = findViewById(R.id.grid_utility);
         gridPeer = findViewById(R.id.grid_peer);
+
         profileButton = findViewById(R.id.btn_profile);
 
         cardCanteen = findViewById(R.id.card_canteen);
@@ -69,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         cardCanteen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // This opens your CanteenActivity
                 Intent intent = new Intent(MainActivity.this, CanteenActivity.class);
                 startActivity(intent);
             }
@@ -100,16 +107,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // --- Profile Button ---
-        // --- Profile Button ---
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // This opens your ProfileActivity
                 Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
-        // ... after your profileButton.setOnClickListener
 
         // --- Doubt Forum Card ---
         cardDoubt.setOnClickListener(new View.OnClickListener() {
