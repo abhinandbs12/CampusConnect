@@ -1,4 +1,4 @@
-package com.vineet.campusconnect; // <-- Make sure this line matches!
+package com.vineet.campusconnect;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +16,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+// FIX 1: Add explicit import for RegisterActivity to resolve "cannot find symbol" error
+import com.vineet.campusconnect.RegisterActivity;
+// FIX 2: If MainActivity also gives a "cannot find symbol" error, uncomment the line below.
+// import com.vineet.campusconnect.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,7 +40,10 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.et_login_email);
         etPassword = findViewById(R.id.et_login_password);
         loginButton = findViewById(R.id.btn_login);
-        goToRegisterButton = findViewById(R.id.tv_go_to_register);
+
+        // FIX 3: Corrected ID for the "Go to Register" button from tv_go_to_register
+        // to tv_go_to_register_bottom, matching the improved UI layout.
+        goToRegisterButton = findViewById(R.id.tv_go_to_register_bottom);
 
         // 4. Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();

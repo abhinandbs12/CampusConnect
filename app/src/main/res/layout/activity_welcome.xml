@@ -4,15 +4,24 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/welcome_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Welcome to Presidency Campus Connect"
-        android:textAlignment="center"
-        android:textSize="28sp"
-        android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/logo_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_above="@id/welcome_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_presidency_logo"
+        android:contentDescription="Campus Connect Logo"
+        android:alpha="0.0" />  <TextView
+    android:id="@+id/welcome_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:text="Welcome to Presidency Campus Connect"
+    android:textAlignment="center"
+    android:textSize="28sp"
+    android:textStyle="bold" />
 
     <Button
         android:id="@+id/continue_button"
