@@ -35,7 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.et_login_email);
         etPassword = findViewById(R.id.et_login_password);
         loginButton = findViewById(R.id.btn_login);
-        goToRegisterButton = findViewById(R.id.tv_go_to_register);
+        goToRegisterButton = findViewById(R.id.tv_go_to_register_bottom);
+
 
         // 4. Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();

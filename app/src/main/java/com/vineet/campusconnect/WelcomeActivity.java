@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView; // <-- FRIEND'S NEW IMPORT
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class WelcomeActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private ImageView logoImage; // <-- FRIEND'S NEW VARIABLE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +25,9 @@ public class WelcomeActivity extends AppCompatActivity {
         // 1. Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // 2. Find the "Continue" button
+        // 2. Find the "Continue" button and logo image
         Button continueButton = findViewById(R.id.continue_button);
+        logoImage = findViewById(R.id.logo_image); // <-- FRIEND'S NEW LINE
 
         // 3. Set the click listener
         continueButton.setOnClickListener(new View.OnClickListener() {
@@ -36,14 +39,19 @@ public class WelcomeActivity extends AppCompatActivity {
                 finish(); // Close the welcome screen
             }
         });
+
+        // 4. FRIEND'S NEW FADING ANIMATION
+        logoImage.animate()
+                .alpha(1.0f)     // Fade to fully visible
+                .setDuration(1500) // Over 1.5 seconds
+                .start();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        // 4. THIS IS THE AUTO-LOGIN CHECK
-        // Check if a user is currently signed in
+        // 5. THIS IS YOUR AUTO-LOGIN CHECK (No changes)
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {

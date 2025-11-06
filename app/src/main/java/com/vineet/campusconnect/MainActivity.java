@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButtonToggleGroup;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     GridLayout gridUtility, gridPeer;
     ImageButton profileButton;
     MaterialCardView cardCanteen, cardEvent, cardTask, cardLinks;
+    TextView welcomeTitle;
 
     // ... after your other card declarations
     MaterialCardView cardDoubt, cardGroup, cardLostFound;
@@ -34,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         gridUtility = findViewById(R.id.grid_utility);
         gridPeer = findViewById(R.id.grid_peer);
         profileButton = findViewById(R.id.btn_profile);
+        welcomeTitle = findViewById(R.id.tv_welcome_title);
+
+
 
         cardCanteen = findViewById(R.id.card_canteen);
         cardEvent = findViewById(R.id.card_event);
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         cardDoubt = findViewById(R.id.card_doubt);
         cardGroup = findViewById(R.id.card_group);
         cardLostFound = findViewById(R.id.card_lost_found);
+
 
         // 4. Set up the Toggle Button listener
         toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
@@ -120,10 +126,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // --- Group Finder Card ---
+        // --- Group Finder Card ---
         cardGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showComingSoonToast();
+                // This opens your new GroupFeedActivity (the feed)
+                Intent intent = new Intent(MainActivity.this, GroupFeedActivity.class);
+                startActivity(intent);
             }
         });
 
