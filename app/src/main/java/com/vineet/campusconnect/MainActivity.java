@@ -93,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
         cardDoubt.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, DoubtFeedActivity.class));
         });
-        cardLostFound.setOnClickListener(v -> showComingSoonToast("Lost & Found"));
+// --- Lost & Found Card ---
+        cardLostFound.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, LostAndFoundActivity.class));
+        });
     }
 
     private void showComingSoonToast(String featureName) {

@@ -59,6 +59,10 @@
 
         <activity android:name=".DoubtDetailsActivity" />
 
+        <activity android:name=".LostAndFoundActivity" />
+
+        <activity android:name=".PostLostItemActivity" />
+
 
     </application>
 

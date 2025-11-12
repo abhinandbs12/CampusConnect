@@ -58,7 +58,7 @@ public class DoubtFeedActivity extends AppCompatActivity {
         // Handle clicks on doubts
         // In DoubtFeedActivity.java onCreate()
         adapter.setOnDoubtClickListener(doubtId -> {
-            Intent intent = new Intent(DoubtFeedActivity.this, DoubtDetailsActivity.class);
+            Intent intent = new Intent(DoubtFeedActivity.this.peekAvailableContext(), DoubtDetailsActivity.class);
             intent.putExtra("DOUBT_ID", doubtId);
             startActivity(intent);
         });
