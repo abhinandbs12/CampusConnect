@@ -50,5 +50,29 @@ dependencies {
     // This adds the Material Design components library
     implementation("com.google.android.material:material:1.12.0")
 
+    // This adds the library for Firebase UI Firestore Adapters
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
+
+    // This adds the library for Firebase Storage (file uploads)
+    implementation("com.google.firebase:firebase-storage")
+
+    // Room Database (local storage)
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+
+    implementation("androidx.browser:browser:1.8.0")
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // Android Navigation Component (for swapping Fragments)
+    val navVersion = "2.7.5"
+    implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
+
+    implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+
+
+
 
 }

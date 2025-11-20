@@ -2,147 +2,112 @@ package com.vineet.campusconnect;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.GridLayout; // Use standard Android GridLayout
-import android.widget.ImageButton;
-import android.widget.TextView; // NEW: Import TextView
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.card.MaterialCardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.vineet.campusconnect.fragments.HomeFragment;
 
-    // 1. Declare all our UI elements.
-    MaterialButtonToggleGroup toggleGroup;
-    GridLayout gridUtility;
-    GridLayout gridPeer;
-    ImageButton profileButton;
-    TextView welcomeTitle; // NEW: Declaration for the header title
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    MaterialCardView cardCanteen, cardEvent, cardTask, cardLinks;
-
-    // ... after your other card declarations
-    MaterialCardView cardDoubt, cardGroup, cardLostFound;
+    public DrawerLayout drawerLayout;
+    private NavController navController;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 3. Find all the UI elements by their ID
-        toggleGroup = findViewById(R.id.toggle_group);
+        // 1. Initialize Views
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        BottomNavigationView bottomNavView = findViewById(R.id.bottom_nav_view);
 
-        // Find the new TextView element
-        welcomeTitle = findViewById(R.id.tv_welcome_title);
+        // 2. Setup Bottom Nav
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+            NavigationUI.setupWithNavController(bottomNavView, navController);
+        }
 
-        // FIX: Both containers must be found as GridLayouts
-        gridUtility = findViewById(R.id.grid_utility);
-        gridPeer = findViewById(R.id.grid_peer);
-
-        profileButton = findViewById(R.id.btn_profile);
-
-        cardCanteen = findViewById(R.id.card_canteen);
-        cardEvent = findViewById(R.id.card_event);
-        cardTask = findViewById(R.id.card_task);
-        cardLinks = findViewById(R.id.card_links);
-
-        // ... after finding your other cards
-        cardDoubt = findViewById(R.id.card_doubt);
-        cardGroup = findViewById(R.id.card_group);
-        cardLostFound = findViewById(R.id.card_lost_found);
-
-        // 4. Set up the Toggle Button listener
-        toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
-            @Override
-            public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
-                if (isChecked) {
-                    if (checkedId == R.id.btn_toggle_utility) {
-                        // Show Utility grid, hide Peer grid
-                        gridUtility.setVisibility(View.VISIBLE);
-                        gridPeer.setVisibility(View.GONE);
-                    } else if (checkedId == R.id.btn_toggle_peer) {
-                        // Show Peer grid, hide Utility grid
-                        gridUtility.setVisibility(View.GONE);
-                        gridPeer.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-
-        // 5. Set up click listeners for all the cards
-
-        // --- Canteen Card ---
-        cardCanteen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CanteenActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // --- Event Card ---
-        cardEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComingSoonToast();
-            }
-        });
-
-        // --- Task Card ---
-        cardTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComingSoonToast();
-            }
-        });
-
-        // --- Links Card ---
-        cardLinks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComingSoonToast();
-            }
-        });
-
-        // --- Profile Button ---
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // --- Doubt Forum Card ---
-        cardDoubt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComingSoonToast();
-            }
-        });
-
-        // --- Group Finder Card ---
-        cardGroup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComingSoonToast();
-            }
-        });
-
-        // --- Lost & Found Card ---
-        cardLostFound.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComingSoonToast();
-            }
-        });
-
+        // 3. Setup Drawer
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
-    // A helper method to show a "Coming Soon" message
-    private void showComingSoonToast() {
-        Toast.makeText(MainActivity.this, "Feature coming soon!", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        // Handle Navigation
+        if (id == R.id.nav_profile_edit) {
+            if (navController != null) navController.navigate(R.id.nav_profile);
+        } else if (id == R.id.nav_settings) {
+            Toast.makeText(this, "Settings coming soon!", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_logout) {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        }
+
+        // Handle Mode Switching
+        else if (id == R.id.nav_toggle_peer) {
+            // Switch to Peer Mode
+            updateHomeFragmentMode("peer");
+            // Swap visibility of buttons
+            toggleMenuVisibility(false);
+        } else if (id == R.id.nav_toggle_utility) {
+            // Switch to Utility Mode
+            updateHomeFragmentMode("utility");
+            // Swap visibility of buttons
+            toggleMenuVisibility(true);
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    // Helper to toggle the menu items
+    private void toggleMenuVisibility(boolean showPeerOption) {
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_toggle_peer).setVisible(showPeerOption);
+        menu.findItem(R.id.nav_toggle_utility).setVisible(!showPeerOption);
+    }
+
+    // Helper to talk to HomeFragment
+    private void updateHomeFragmentMode(String mode) {
+        // First, make sure we are actually on the Home screen!
+        if (navController.getCurrentDestination().getId() != R.id.nav_home) {
+            navController.navigate(R.id.nav_home);
+        }
+
+        // Now find the fragment and call the method
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        if (navHostFragment != null) {
+            Fragment currentFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+            if (currentFragment instanceof HomeFragment) {
+                ((HomeFragment) currentFragment).switchToMode(mode);
+            }
+        }
+    }
+
+    public void openDrawer() {
+        if (drawerLayout != null) {
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
     }
 }

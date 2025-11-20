@@ -21,7 +21,6 @@
             android:paddingVertical="48dp"
             android:gravity="center_horizontal">
 
-            <!-- 1. Minimalist Logo/Header -->
             <ImageView
                 android:id="@+id/iv_logo_register"
                 android:layout_width="64dp"
@@ -48,7 +47,6 @@
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
-            <!-- 2. Full Name Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_register_name"
                 android:layout_width="match_parent"
@@ -64,7 +62,6 @@
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 3. Branch Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_register_branch"
                 android:layout_width="match_parent"
@@ -81,7 +78,6 @@
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 4. Email Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_register_email"
                 android:layout_width="match_parent"
@@ -98,7 +94,6 @@
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 5. Password Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_register_password"
                 android:layout_width="match_parent"
@@ -116,7 +111,6 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- 6. Register Button (Primary Action) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_register"
                 android:layout_width="match_parent"
@@ -127,7 +121,6 @@
                 android:textSize="16sp"
                 app:cornerRadius="10dp"/>
 
-            <!-- Filler View to push content up if needed -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -137,7 +130,6 @@
     </ScrollView>
 
 
-    <!-- 7. Go to Login Button (Secondary Action, Anchored Bottom) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/tv_go_to_login_bottom"
         android:layout_width="match_parent"

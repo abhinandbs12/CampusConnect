@@ -1,4 +1,4 @@
-package com.vineet.campusconnect;
+package com.vineet.campusconnect; // <-- Make sure this line matches!
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,10 +21,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
-// Note: If you have compilation issues with other classes (like LoginActivity),
-// you may need to explicitly import them here as well:
-// import com.vineet.campusconnect.LoginActivity;
-
 public class RegisterActivity extends AppCompatActivity {
 
     // 1. Declare our UI elements
@@ -46,8 +42,6 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.et_register_email);
         etPassword = findViewById(R.id.et_register_password);
         registerButton = findViewById(R.id.btn_register);
-
-        // FIX: Corrected ID from R.id.tv_go_to_login to R.id.tv_go_to_login_bottom
         goToLoginButton = findViewById(R.id.tv_go_to_login_bottom);
 
         // 4. Initialize Firebase
@@ -71,7 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 // 2. Show a progress message
-                Toast.makeText(RegisterActivity.this, "Creating account...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this.peekAvailableContext(), "Creating account...", Toast.LENGTH_SHORT).show();
 
                 // 3. Create the user in Firebase Auth
                 mAuth.createUserWithEmailAndPassword(email, password)
