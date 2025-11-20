@@ -8,7 +8,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -25,26 +28,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawerLayout;
     private NavController navController;
     private NavigationView navigationView;
+    private BottomNavigationView bottomNavView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 1. Initialize Views
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        BottomNavigationView bottomNavView = findViewById(R.id.bottom_nav_view);
+        bottomNavView = findViewById(R.id.bottom_nav_view);
 
-        // 2. Setup Bottom Nav
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(insets.left, insets.top, insets.right, 0);
+            bottomNavView.setPadding(0, 0, 0, insets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(bottomNavView, navController);
+
+            bottomNavView.setOnItemReselectedListener(item -> {
+                int destinationId = item.getItemId();
+                navController.popBackStack(destinationId, false);
+            });
         }
 
-        // 3. Setup Drawer
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -52,28 +66,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        // Handle Navigation
+        // --- Profile & Settings ---
         if (id == R.id.nav_profile_edit) {
-            if (navController != null) navController.navigate(R.id.nav_profile);
-        } else if (id == R.id.nav_settings) {
-            Toast.makeText(this, "Settings coming soon!", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_logout) {
+            if (navController != null) navController.navigate(R.id.nav_edit_profile);
+        }
+        else if (id == R.id.nav_settings) {
+            if (navController != null) navController.navigate(R.id.nav_settings);
+        }
+
+        // --- Share & Rate & Privacy (NEW PROFESSIONAL MESSAGES) ---
+        else if (id == R.id.nav_share) {
+            Toast.makeText(this, "Sharing feature will be available soon!", Toast.LENGTH_SHORT).show();
+        }
+        else if (id == R.id.nav_rate) {
+            Toast.makeText(this, "Rating feature is currently under development.", Toast.LENGTH_SHORT).show();
+        }
+        else if (id == R.id.nav_privacy) {
+            Toast.makeText(this, "Privacy Policy page is coming soon.", Toast.LENGTH_SHORT).show();
+        }
+
+        // --- Logout ---
+        else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
 
-        // Handle Mode Switching
+        // --- Mode Switching ---
         else if (id == R.id.nav_toggle_peer) {
-            // Switch to Peer Mode
             updateHomeFragmentMode("peer");
-            // Swap visibility of buttons
             toggleMenuVisibility(false);
-        } else if (id == R.id.nav_toggle_utility) {
-            // Switch to Utility Mode
+        }
+        else if (id == R.id.nav_toggle_utility) {
             updateHomeFragmentMode("utility");
-            // Swap visibility of buttons
             toggleMenuVisibility(true);
         }
 
@@ -81,21 +107,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    // Helper to toggle the menu items
     private void toggleMenuVisibility(boolean showPeerOption) {
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_toggle_peer).setVisible(showPeerOption);
         menu.findItem(R.id.nav_toggle_utility).setVisible(!showPeerOption);
     }
 
-    // Helper to talk to HomeFragment
     private void updateHomeFragmentMode(String mode) {
-        // First, make sure we are actually on the Home screen!
-        if (navController.getCurrentDestination().getId() != R.id.nav_home) {
-            navController.navigate(R.id.nav_home);
+        if (bottomNavView != null) {
+            bottomNavView.setSelectedItemId(R.id.nav_home);
         }
-
-        // Now find the fragment and call the method
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment != null) {
             Fragment currentFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();

@@ -21,29 +21,27 @@ import com.vineet.campusconnect.models.LinkItem;
 
 public class LinkAdapter extends FirestoreRecyclerAdapter<LinkItem, LinkAdapter.LinkViewHolder> {
 
-    private Context context;
-
-    public LinkAdapter(@NonNull FirestoreRecyclerOptions<LinkItem> options, Context context) {
+    public LinkAdapter(@NonNull FirestoreRecyclerOptions<LinkItem> options) {
         super(options);
-        this.context = context;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull LinkViewHolder holder, int position, @NonNull LinkItem model) {
-        // 1. Set the text data
         holder.tvTitle.setText(model.getTitle());
         holder.tvDescription.setText(model.getDescription());
         holder.chipCategory.setText(model.getCategory());
 
-        // 2. Handle the "Important" badge visibility
         if (model.isImportant()) {
             holder.ivImportantBadge.setVisibility(View.VISIBLE);
         } else {
             holder.ivImportantBadge.setVisibility(View.GONE);
         }
 
-        // 3. Handle clicks: Open the URL
-        holder.itemView.setOnClickListener(v -> openLink(model.getUrl()));
+        holder.itemView.setOnClickListener(v -> {
+            // Always get the fresh, live context from the view
+            Context context = v.getContext();
+            openLink(context, model.getUrl());
+        });
     }
 
     @NonNull
@@ -54,20 +52,24 @@ public class LinkAdapter extends FirestoreRecyclerAdapter<LinkItem, LinkAdapter.
         return new LinkViewHolder(view);
     }
 
-    // Helper method to open links using Chrome Custom Tabs (modern & fast)
-    private void openLink(String url) {
+    private void openLink(Context context, String url) {
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();
             customTabsIntent.launchUrl(context, Uri.parse(url));
         } catch (Exception e) {
-            // Fallback if Chrome is not installed: open in standard browser
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            context.startActivity(browserIntent);
+            // Fallback if Chrome is not installed or fails
+            try {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                // SAFETY FLAG: Prevents crash if context is not an Activity
+                browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(browserIntent);
+            } catch (Exception ex) {
+                // Handle invalid URL or no browser found
+            }
         }
     }
 
-    // --- ViewHolder Class ---
     static class LinkViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvDescription;
         Chip chipCategory;

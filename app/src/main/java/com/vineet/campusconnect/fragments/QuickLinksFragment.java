@@ -6,14 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.vineet.campusconnect.R;
@@ -30,32 +31,34 @@ public class QuickLinksFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_quick_links, container, false);
+        return inflater.inflate(R.layout.fragment_quick_links, container, false);
+    }
 
-        // 1. Get the category passed from the previous fragment
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         if (getArguments() != null) {
             currentCategory = getArguments().getString("CATEGORY_NAME");
         }
         if (currentCategory == null) currentCategory = "All";
 
-        // 2. Setup Toolbar
-        Toolbar toolbar = view.findViewById(R.id.toolbar_quick_links);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(currentCategory);
-        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
+        MaterialToolbar toolbar = view.findViewById(R.id.toolbar_quick_links);
+        NavController navController = Navigation.findNavController(view);
+        NavigationUI.setupWithNavController(toolbar, navController);
+        toolbar.setTitle(currentCategory);
 
-        // 3. Initialize Firebase & RecyclerView
         db = FirebaseFirestore.getInstance();
         recyclerView = view.findViewById(R.id.recycler_view_links);
+
+        // FIX 1: Disable Item Animator to prevent crash on rapid updates/returns
+        recyclerView.setItemAnimator(null);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // 4. Setup initial query
         setupRecyclerView(getBaseQuery());
 
-        // 5. Setup Search View
-        SearchView searchView = view.findViewById(R.id.search_view_links);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        androidx.appcompat.widget.SearchView searchView = view.findViewById(R.id.search_view_links);
+        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 firebaseSearch(query);
@@ -68,8 +71,6 @@ public class QuickLinksFragment extends Fragment {
                 return false;
             }
         });
-
-        return view;
     }
 
     private Query getBaseQuery() {
@@ -96,14 +97,19 @@ public class QuickLinksFragment extends Fragment {
     }
 
     private void setupRecyclerView(Query query) {
+        // FIX 2: Safely stop the previous adapter before creating a new one
         if (adapter != null) {
             adapter.stopListening();
         }
+
         FirestoreRecyclerOptions<LinkItem> options = new FirestoreRecyclerOptions.Builder<LinkItem>()
                 .setQuery(query, LinkItem.class)
                 .build();
 
-        adapter = new LinkAdapter(options, getContext());
+        // Create new adapter (context-safe constructor we fixed earlier)
+        adapter = new LinkAdapter(options);
+
+        // FIX 3: Set adapter implies a data reset, which avoids the inconsistency crash
         recyclerView.setAdapter(adapter);
         adapter.startListening();
     }

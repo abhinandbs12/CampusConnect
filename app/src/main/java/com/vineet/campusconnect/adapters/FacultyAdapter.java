@@ -9,39 +9,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.vineet.campusconnect.R;
 import com.vineet.campusconnect.models.Faculty;
 
-public class FacultyAdapter extends FirestoreRecyclerAdapter<Faculty, FacultyAdapter.FacultyViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
+
+// UPDATED: Extends standard RecyclerView.Adapter now
+public class FacultyAdapter extends RecyclerView.Adapter<FacultyAdapter.FacultyViewHolder> {
 
     private Context context;
+    private List<Faculty> facultyList;
+    private List<Faculty> facultyListFull; // For search filtering
     private OnItemClickListener listener;
 
-    public FacultyAdapter(@NonNull FirestoreRecyclerOptions<Faculty> options, Context context) {
-        super(options);
+    public FacultyAdapter(Context context, List<Faculty> facultyList) {
         this.context = context;
-    }
-
-    @Override
-    protected void onBindViewHolder(@NonNull FacultyViewHolder holder, int position, @NonNull Faculty model) {
-        holder.tvName.setText(model.getName());
-        holder.tvDesignation.setText(model.getDesignation());
-
-        if (model.getImageUrl() != null && !model.getImageUrl().isEmpty()) {
-            Glide.with(context).load(model.getImageUrl()).into(holder.ivImage);
-        } else {
-            holder.ivImage.setImageResource(R.drawable.ic_nav_profile); // Default icon
-        }
-
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                String docId = getSnapshots().getSnapshot(position).getId();
-                model.setId(docId); // Save ID to model
-                listener.onItemClick(model);
-            }
-        });
+        this.facultyList = facultyList;
+        this.facultyListFull = new ArrayList<>(facultyList); // Copy for search
     }
 
     @NonNull
@@ -51,6 +36,48 @@ public class FacultyAdapter extends FirestoreRecyclerAdapter<Faculty, FacultyAda
         return new FacultyViewHolder(view);
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull FacultyViewHolder holder, int position) {
+        Faculty model = facultyList.get(position);
+
+        holder.tvName.setText(model.getName());
+        holder.tvDesignation.setText(model.getDesignation());
+
+        if (model.getImageUrl() != null && !model.getImageUrl().isEmpty()) {
+            Glide.with(context).load(model.getImageUrl()).into(holder.ivImage);
+        } else {
+            holder.ivImage.setImageResource(R.drawable.ic_nav_profile);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(model);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return facultyList.size();
+    }
+
+    // --- Search Filter Logic ---
+    public void filter(String text) {
+        facultyList.clear();
+        if (text.isEmpty()) {
+            facultyList.addAll(facultyListFull);
+        } else {
+            text = text.toLowerCase();
+            for (Faculty item : facultyListFull) {
+                if (item.getName().toLowerCase().contains(text)) {
+                    facultyList.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    // --- Interface ---
     public interface OnItemClickListener {
         void onItemClick(Faculty faculty);
     }
@@ -59,6 +86,7 @@ public class FacultyAdapter extends FirestoreRecyclerAdapter<Faculty, FacultyAda
         this.listener = listener;
     }
 
+    // --- ViewHolder ---
     static class FacultyViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvDesignation;
         ImageView ivImage;

@@ -1,6 +1,5 @@
 package com.vineet.campusconnect.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,13 +34,13 @@ public class LinkCategoriesFragment extends Fragment {
         return view;
     }
 
-    // UPDATED: This method now navigates correctly
     private void openCategory(String categoryName, View view) {
         // INTERCEPT FACULTY CLICK
         if (categoryName.equals("Faculty")) {
-            Intent intent = new Intent(getActivity(), com.vineet.campusconnect.FacultyDirectoryActivity.class);
-            startActivity(intent);
-            return; // Stop here, don't do the normal navigation
+            // FIX: Navigate to the 'nav_search' destination defined in your graph
+            // instead of trying to start a deleted Activity.
+            Navigation.findNavController(view).navigate(R.id.nav_search);
+            return;
         }
 
         // Normal behavior for other categories
