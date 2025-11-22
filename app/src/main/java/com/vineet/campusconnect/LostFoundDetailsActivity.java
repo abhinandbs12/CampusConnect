@@ -1,5 +1,10 @@
 package com.vineet.campusconnect;
 
+import android.content.Intent; // <-- ADDED
+import android.net.Uri; // <-- ADDED
+import android.content.Context; // <-- ADDED for Clipboard/Toast context
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -7,14 +12,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.card.MaterialCardView; // Import CardView
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +42,8 @@ public class LostFoundDetailsActivity extends AppCompatActivity {
     private TextView tvTitle, tvAuthorDate, tvLocation, tvDescription;
     private Button btnContact, btnMarkReturned;
     // We removed the toolbar, so no need for that variable
+
+    private String contactInfo; // To hold the contact info for the button's actual click action
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,15 +155,23 @@ public class LostFoundDetailsActivity extends AppCompatActivity {
 
                             // --- Button Logic ---
                             authorId = doc.getString("authorId");
-                            String contactInfo = doc.getString("contactInfo");
+                            contactInfo = doc.getString("contactInfo"); // Fetch contact info here
                             Boolean isReturned = doc.getBoolean("isReturned");
                             if (isReturned == null) isReturned = false;
 
-                            // Contact Button
-                            btnContact.setText("Contact: " + contactInfo);
-                            btnContact.setOnClickListener(v -> {
-                                Toast.makeText(this, "Contacting " + contactInfo, Toast.LENGTH_SHORT).show();
-                            });
+                            // --- PRIVACY FIX LOGIC ---
+                            if (currentUser != null && currentUser.getUid().equals(authorId)) {
+                                // User is the owner: Hide actual contact info from themselves
+                                btnContact.setText("This is your listing.");
+                                btnContact.setEnabled(false);
+                            } else {
+                                // User is a viewer: Show contact info
+                                btnContact.setText("Contact Poster");
+                                btnContact.setEnabled(true);
+                                btnContact.setOnClickListener(v -> handleContact(contactInfo));
+                            }
+                            // --- END PRIVACY FIX LOGIC ---
+
 
                             // "Mark as Returned" Button
                             if (currentUser != null && currentUser.getUid().equals(authorId) && !isReturned) {
@@ -180,15 +193,36 @@ public class LostFoundDetailsActivity extends AppCompatActivity {
 
                         } catch (Exception e) {
                             Log.e("DEBUG", "CRASH! Failed to set UI. Check your data types in Firebase!", e);
-                            Toast.makeText(this, "CRASH! Data mismatch. Check Firebase fields (e.g., 'timestamp').", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LostFoundDetailsActivity.this, "CRASH! Data mismatch. Check Firebase fields (e.g., 'timestamp').", Toast.LENGTH_LONG).show();
                         }
 
                     } else {
                         Log.e("DEBUG", "CRASH! Firestore task was not successful.", task.getException());
-                        Toast.makeText(this, "Error loading item.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LostFoundDetailsActivity.this, "Error loading item.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
+    // --- NEW: handleContact implementation ---
+    private void handleContact(String contact) {
+        // Implement logic to launch email or dialer based on contact string content
+        try {
+            if (contact.contains("@")) {
+                // Assume email
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:" + contact));
+                startActivity(Intent.createChooser(intent, "Contact via Email"));
+            } else {
+                // Assume phone number
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + contact));
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error: Could not find an app to handle contact.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void markAsReturned() {
         btnMarkReturned.setEnabled(false);

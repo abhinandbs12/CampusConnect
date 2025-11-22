@@ -30,21 +30,27 @@ public class DoubtFeedActivity extends AppCompatActivity {
         // 1. Setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar_doubt_feed);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         toolbar.setNavigationOnClickListener(v -> finish());
 
         // 2. Initialize Firebase & View
         db = FirebaseFirestore.getInstance();
         recyclerView = findViewById(R.id.recycler_view_doubts);
+
+        // FIX: Disable Item Animator to prevent crash on back press (Lifecycle fix)
+        recyclerView.setItemAnimator(null);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // 3. Setup FAB
         ExtendedFloatingActionButton fab = findViewById(R.id.fab_ask_doubt);
-        // In DoubtFeedActivity.java
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(DoubtFeedActivity.this, AskDoubtActivity.class);
             startActivity(intent);
         });
+
         // 4. Setup RecyclerView (Query: All doubts, newest first)
         Query query = db.collection("doubts")
                 .orderBy("timestamp", Query.Direction.DESCENDING);
@@ -56,9 +62,8 @@ public class DoubtFeedActivity extends AppCompatActivity {
         adapter = new DoubtAdapter(options);
 
         // Handle clicks on doubts
-        // In DoubtFeedActivity.java onCreate()
         adapter.setOnDoubtClickListener(doubtId -> {
-            Intent intent = new Intent(DoubtFeedActivity.this.peekAvailableContext(), DoubtDetailsActivity.class);
+            Intent intent = new Intent(DoubtFeedActivity.this, DoubtDetailsActivity.class);
             intent.putExtra("DOUBT_ID", doubtId);
             startActivity(intent);
         });

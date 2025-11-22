@@ -45,6 +45,7 @@
                     android:layout_height="48dp"
                     android:src="@drawable/ic_menu"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Menu"
                     app:tint="?attr/colorOnSurface"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -144,6 +145,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -187,6 +190,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -230,6 +235,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -273,6 +280,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -316,6 +325,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -359,6 +370,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -402,6 +415,8 @@
                             android:textColor="@android:color/white"
                             android:textSize="18sp"
                             android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:layout_alignParentBottom="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>

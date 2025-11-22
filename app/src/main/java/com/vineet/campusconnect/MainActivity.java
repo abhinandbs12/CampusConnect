@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,12 +54,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
 
-            // Connect Bottom Navigation
+            // --- FIX: Custom Listener to Force Navigation and Stack Cleanup ---
             bottomNavView.setOnItemSelectedListener(item -> {
+                int itemId = item.getItemId();
+
+                // If the selected item is one of the four main tabs:
+                if (itemId == R.id.nav_home || itemId == R.id.nav_search || itemId == R.id.nav_history || itemId == R.id.nav_profile) {
+
+                    // 1. Pop the entire stack back to the root of the selected tab.
+                    // This is an aggressive fix to ensure no nested screens (like Canteen) remain.
+                    navController.popBackStack(itemId, false);
+
+                    // 2. Then navigate to the destination.
+                    navController.navigate(itemId);
+                    return true;
+                }
+
+                // For secondary destinations (like links to fragments outside the tabs),
+                // let the default handler manage the pop.
                 return NavigationUI.onNavDestinationSelected(item, navController);
             });
+            // --- END FIX ---
 
-            // Reset to top of stack when re-selecting the same tab
+
+            // "Pop to Root" behavior on re-select (This logic remains crucial)
             bottomNavView.setOnItemReselectedListener(item -> {
                 int destinationId = item.getItemId();
                 navController.popBackStack(destinationId, false);
@@ -73,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_profile_edit) {
-            if (navController != null) navController.navigate(R.id.nav_edit_profile);
+            if (navController != null) bottomNavView.setSelectedItemId(R.id.nav_profile); // Simulate Profile Tab click
         }
         else if (id == R.id.nav_settings) {
             if (navController != null) navController.navigate(R.id.nav_settings);
@@ -85,12 +104,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         }
         else if (id == R.id.nav_toggle_peer) {
-            // FIX: Use method that guarantees Home is loaded first
             updateHomeFragmentMode("peer");
             toggleMenuVisibility(false);
         }
         else if (id == R.id.nav_toggle_utility) {
-            // FIX: Use method that guarantees Home is loaded first
             updateHomeFragmentMode("utility");
             toggleMenuVisibility(true);
         }
@@ -120,18 +137,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             bottomNavView.setSelectedItemId(R.id.nav_home);
         }
 
-        // 2. FIX: Add a small delay to ensure the HomeFragment has time to attach
-        // before we try to call its methods, resolving the inconsistency issue.
+        // 2. Add a small delay for the fragment to load before manipulating chips
         bottomNavView.postDelayed(() -> {
             NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
             if (navHostFragment != null) {
                 Fragment currentFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
                 if (currentFragment instanceof HomeFragment) {
-                    // This call will now execute reliably after the fragment swap completes.
                     ((HomeFragment) currentFragment).switchToMode(mode);
                 }
             }
-        }, 100); // 100ms delay
+        }, 100);
     }
 
     public void openDrawer() {
